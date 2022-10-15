@@ -14,7 +14,7 @@ struct SNode
 
 int main(void)
 {
-    while(1);
+    return 0;
 }
 //02.入栈
 void Push(Stack PtrS,ElementType item)

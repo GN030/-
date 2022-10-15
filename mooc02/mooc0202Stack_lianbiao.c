@@ -10,6 +10,8 @@ struct SNode
     ElementType Data;
     Stack Next;
 };
+Stack CreateStack();
+int IsEmpty(Stack S);
 
 int main(void)
 {
@@ -49,14 +51,14 @@ ElementType Pop(Stack S)
     if (S->Next==NULL)
     {
         printf("堆栈空");
-        return NULL;
+        return ERROR;
     }
     else
     {
         FirstCell = S->Next;
         S->Next = FirstCell->Next;
         TopElem = FirstCell->Data;
-        Free(FirstCell);
+        free(FirstCell);
         return TopElem;
     }
 }
