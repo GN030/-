@@ -34,7 +34,7 @@ ElementType DeleteQ(Queue PtrQ)
     if(PtrQ->front==PtrQ->rear)
     {
         printf("队列空");
-        return;
+        return 0;
     }
     PtrQ->front = (PtrQ->front+1)%MaxSize;
     return (PtrQ->Data[PtrQ->front]);
