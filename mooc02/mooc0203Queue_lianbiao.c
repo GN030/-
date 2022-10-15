@@ -29,7 +29,7 @@ void AddQ(Queue PtrQ,ElementType item)
     PtrQ->rear->Next = TempCell;
     PtrQ->rear = TempCell;
 }
-//03.出队操作
+//03.出队操作，不带头节点的链表队列
 ElementType DeleteQ(Queue PtrQ)
 {
     struct Node *TempCell;
