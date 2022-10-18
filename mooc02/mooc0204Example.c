@@ -40,6 +40,22 @@ int main(void)
     Polynomial P1, P2, PP1, PP2, PS;
     P1 = PolyRead();
     P2 = PolyRead();
+    if (P1 == NULL)
+    {
+        printf("0 0\n");
+        PrintPoly(P2);
+        while (1)
+            ;
+        return 0;
+    }
+    else if (P2 == NULL)
+    {
+        printf("0 0\n");
+        PrintPoly(P1);
+        while (1)
+            ;
+        return 0;
+    }
     printf("乘法1>>>\n");
     PP1 = Mult1(P1, P2); //按照方法1相乘的结果
     printf("乘法2>>>\n");
@@ -52,7 +68,8 @@ int main(void)
     PS = PolyAdd(P1, P2);
     printf("加法运算结果：");
     PrintPoly(PS);
-    while (1);
+    while (1)
+        ;
     return 0;
 }
 Polynomial PolyRead()
@@ -62,23 +79,32 @@ Polynomial PolyRead()
     P = (Polynomial)malloc(sizeof(struct PolyNode));
     rear = P;
     scanf("%d", &N);
-    while (N--)
+    if (N == 0)
     {
-        scanf("%d %d", &c, &e);
-        Attach(c, e, &rear);
-        // temp = (Polynomial)malloc(sizeof(struct PolyNode));
-        // temp->expon = e;
-        // temp->coef = c;
-        // temp->link = NULL;
-        // PP->link = temp;
-        // PP = temp;
+        P->link = NULL;
+        printf("输入多项式:0 0\n");
     }
+    else
+        while (N--)
+        {
+            scanf("%d %d", &c, &e);
+            Attach(c, e, &rear);
+            // temp = (Polynomial)malloc(sizeof(struct PolyNode));
+            // temp->expon = e;
+            // temp->coef = c;
+            // temp->link = NULL;
+            // PP->link = temp;
+            // PP = temp;
+        }
     temp = P;
     P = P->link;
     free(temp);
     //这里最好输出一下，进行一下检查
-    printf("输入多项式：");
-    PrintPoly(P);
+    if (P)
+    {
+        printf("输入多项式：");
+        PrintPoly(P);
+    }
     return P;
 }
 Polynomial PolyAdd(Polynomial P1, Polynomial P2)
@@ -158,7 +184,7 @@ Polynomial Mult1(Polynomial P1, Polynomial P2)
             Attach(P1->coef * t2->coef, P1->expon + t2->expon, &prear); //多项式系数一定不为0
             t2 = t2->link;
         }
-        printf("P1_%d * P2=",i);
+        printf("P1_%d * P2=", i);
         PrintPoly(P0->link);
         if (i == 1) //第一次运算，直接将临时结果P0的值赋给P
         {
@@ -229,7 +255,7 @@ void PrintPoly(Polynomial P)
     }
     while (P)
     {
-        printf(" %dX^%d ", P->coef, P->expon);
+        printf("%dX^%d ", P->coef, P->expon);
         P = P->link;
     }
     printf("\n");
