@@ -15,7 +15,7 @@ BinTree Find(ElementType X, BinTree BST)
         return NULL;
     if (X > BST->Data)
         return Find(X, BST->Right); //在右子树中继续查找
-    else if (X < BST->Left)
+    else if (X < BST->Data)
         return Find(X, BST->Left); //在左子树中继续查找
     else
         return BST; //查找成功，返回结点的找到结点的地址
@@ -64,9 +64,9 @@ BinTree Insert(ElementType X, BinTree Pstr)
     }
     //开始插入元素，X插入左子树，X插入右子树，X已经存在
     else if (X < Pstr->Data)
-        Pstr = Insert(X, Pstr->Left);
+        Pstr->Left = Insert(X, Pstr->Left);
     else if (X > Pstr->Right)
-        Pstr = Insert(X, Pstr->Right);
+        Pstr->Right = Insert(X, Pstr->Right);
     return Pstr;
 }
 // 06二叉搜索树删除元素：情况1删除叶结点，直接删除，修改父结点指针；情况2删除只有一个孩子的结点，将其父结点指向该结点的孩子结点；
@@ -77,9 +77,9 @@ BinTree Delete(ElementType X, BinTree BST)
     if (!BST)
         printf("该元素不存在");
     else if (X < BST->Data)
-        Delete(X, BST->Left); //左子树递归删除
+        BST->Left = Delete(X, BST->Left); //左子树递归删除
     else if (X > BST->Data)
-        Delete(X, BST->Right); //右子树递归删除
+        BST->Right = Delete(X, BST->Right); //右子树递归删除
     //找到要删除的结点元素
     else if (BST->Left && BST->Right) //情况3左右子树都存在
     {
@@ -89,7 +89,7 @@ BinTree Delete(ElementType X, BinTree BST)
     }
     else
     {
-        temp = BST->Right;
+        temp = BST;
         if (!BST->Left) //情况2没有左子树（只有右子树或没有子树）
         {
             // BST->Data = BST->Right->Data;
