@@ -1,6 +1,10 @@
 /*题目介绍：输入计算机数目N，C i j表示查询第i台和第j台计算机是否连接；I i j表示连接第i台和第j台计算机；
 S表示输入结束，若计算机以全部连接，打印“The network is connected.”，否则打印“There are m components.”，其中m表示计算机集合个数*/
-/*注意：将N台计算机映射到集合0-(N-1)范围*/
+/*思路：1.使用集合的简化表示（使用数组来存储集合，数组下标对应元素值，数组值对应根结点元素下标）
+2.集合查找时选用路径压缩的方法（将每一个元素都调整为指向根结点）注意：将N台计算机映射到集合0-(N-1)范围
+3.集合并操作选用按秩归并的方法（层数，节点个数）*/
+/*具体实现见下文代码*/
+
 #include <stdio.h>
 #include <stdlib.h>
 #define MaxSize 10001
@@ -81,7 +85,7 @@ void Check_network(SetType S, int N)
         printf("There are %d components.", counter);
 }
 SetName Find(SetType S, ElementType X)
-{   /*默认集合元素全部初始化为-1*/
+{ /*默认集合元素全部初始化为-1*/
     /*路径压缩*/
     if (S[X] < 0)
         return X;

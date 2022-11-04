@@ -1,3 +1,4 @@
+
 //题中给出的堆栈操作指令，其中Push对应二叉树先序遍历结果，Pop对应二叉树中序遍历结果；要求实现二叉树的后序遍历输出
 //操作注意：scanf输入一个数据后，注意匹配回车键，否则回车符会保存在缓冲区，影响下一个键盘输入，尤其是输入为字符串或者字符时。
 #include <stdio.h>
@@ -31,12 +32,11 @@ void PostOrderTraversal(TNode BT);                     //后序遍历
 int main(void)
 {
     //接收输入
-    int nums, i, j, k, data; // N二叉树结点个数
+    int nums, i, j, k, data,item; // nums二叉树结点个数
     i = 0;
     j = 0;
-    char Str[7]; //输入的命令,要预留一个元素位置保存空格
+    char Str[5]; //输入的命令,要预留一个元素位置保存空格
     scanf("%d\n", &nums);
-    // printf("nums:%d\n",nums);
     if (nums) //二叉树非空
     {
         for (k = 0; k < (2 * nums); k++) //接收输入
@@ -44,16 +44,13 @@ int main(void)
             Str[0]=getchar();
             Str[1]=getchar();
             Str[2]=getchar();
-            Str[6]='\0';
-            // gets(Str);
-            // scanf("%[^\n]", Str);               //"%[^v]"
+            Str[5]='\0';
             if (Str[0] == 'P' && Str[1] == 'u')
             {
                 Str[3]=getchar();
                 Str[4]=getchar();
-                Str[5]=getchar();
+                scanf("%d",&data);/*注意，这里要输入一个数字，不可以再用getchar，否则导致无法读取数字十位及以上部分*/
                 getchar();//处理缓冲区的回车符
-                data = Str[5] - '0';
                 // printf("Str:%s Data:%d\n", Str, data);
                 PreOrder[i++] = data;
                 Push(&S1, data);
@@ -129,3 +126,66 @@ void PostOrderTraversal(TNode BT)
         Post[idx++]=BT->Data;
     }
 }
+/*N=30，测试
+30
+Push 1
+Push 2
+Push 3
+Push 4
+Push 5
+Push 6
+Push 7
+Push 8
+Push 9
+Push 10
+Pop
+Pop
+Pop
+Pop
+Pop
+Pop
+Pop
+Pop
+Pop
+Pop
+Push 11
+Push 12
+Push 13
+Push 14
+Push 15
+Push 16
+Push 17
+Push 18
+Push 19
+Push 20
+Pop
+Pop
+Pop
+Pop
+Pop
+Pop
+Pop
+Pop
+Pop
+Pop
+Push 21
+Push 22
+Push 23
+Push 24
+Push 25
+Push 26
+Push 27
+Push 28
+Push 29
+Push 30
+Pop
+Pop
+Pop
+Pop
+Pop
+Pop
+Pop
+Pop
+Pop
+Pop
+*/
