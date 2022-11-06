@@ -27,13 +27,13 @@
 #include <stdbool.h>
 
 #define ElementType int
-#define MaxSize 10
+#define MaxSize 100
 typedef struct QNode *Queue;
 struct QNode
 {
     ElementType Data[MaxSize];
-    int rear;//记录尾元素序号
-    int front;//记录头元素序号
+    int rear;  //记录尾元素序号
+    int front; //记录头元素序号
 };
 
 /*图的邻接矩阵表示方法*/
@@ -73,8 +73,10 @@ void Visit(Vertex V);                                    /*访问结点*/
 void BFS(MGraph Graph, Vertex S, void (*Visit)(Vertex)); /* 以S为出发点对邻接矩阵存储的图Graph进行BFS搜索 */
 void DFS(MGraph Graph, Vertex S, void (*Visit)(Vertex)); /* 以S为出发点对邻接矩阵存储的图Graph进行DFS搜索 */
 
-void AddQ(Queue PtrQ,ElementType item);//入队列，队列采用循环结构可以最大限度利用空间
-ElementType DeleteQ(Queue PtrQ);//出队列
+void AddQ(Queue PtrQ, ElementType item); //入队列，队列采用循环结构可以最大限度利用空间
+ElementType DeleteQ(Queue PtrQ);         //出队列
+int IsEmpty(Queue PtrQ);                 /*队列空，返回1*/
+Queue CreateQueue();                     /*创建空队*/
 
 int main(void)
 {
@@ -83,22 +85,27 @@ int main(void)
     G = BuildGraph();
     for (i = 0; i < G->Nv; i++) /*广度优先搜索并打印连通集*/
     {
-        if (Visited[i] != 1)
+        if (Visited[i] != true)
         {
             printf("{");
-            BFS(G, 0, Visit);
-            printf(" }");
+            DFS(G, i, Visit);
+            printf(" }\n");
         }
     }
+    for ( i = 0; i < G->Nv; i++)
+    {/*清除访问标志Visited[]*/
+        Visited[i] = false;
+    }   
     for (i = 0; i < G->Nv; i++) /*深度优先搜索并打印连通集*/
     {
-        if (Visited[i] != 1)
+        if (Visited[i] != true)
         {
             printf("{");
-            DFS(G, 0, Visit);
-            printf(" }");
+            BFS(G, i, Visit);
+            printf(" }\n");
         }
     }
+    return 0;
 }
 
 MGraph CreateGraph(int VertexNum)
@@ -113,8 +120,8 @@ MGraph CreateGraph(int VertexNum)
     /* 注意：这里默认顶点编号从0开始，到(Graph->Nv - 1) */
     for (V = 0; V < Graph->Nv; V++)
         for (W = 0; W < Graph->Nv; W++)
-            Graph->G[V][W] = 0; /*空权重全部为0*/
-                                // Graph->G[V][W] = INFINITY;
+            // Graph->G[V][W] = 0; /*空权重全部为0*/
+            Graph->G[V][W] = INFINITY;
 
     return Graph;
 }
@@ -174,7 +181,7 @@ void BFS(MGraph Graph, Vertex S, void (*Visit)(Vertex))
     Queue Q;
     Vertex V, W;
 
-    Q = CreateQueue(MaxSize); /* 创建空队列, MaxSize为外部定义的常数 */
+    Q = CreateQueue(); /* 创建空队列, MaxSize为外部定义的常数 */
     /* 访问顶点S：此处可根据具体访问需要改写 */
     Visit(S);
     Visited[S] = true; /* 标记S已访问 */
@@ -210,26 +217,64 @@ void DFS(MGraph Graph, Vertex S, void (*Visit)(Vertex))
     }
 }
 
-//02.入队列，队列采用循环结构可以最大限度利用空间
-void AddQ(Queue PtrQ,ElementType item)
+// 04.创建空队
+Queue CreateQueue()
 {
-    if((PtrQ->rear+1)%MaxSize==PtrQ->front)
+    Queue Q;
+    Q = (Queue)malloc(sizeof(struct QNode));
+    Q->front = 0;
+    Q->rear = MaxSize;
+    return Q;
+}
+// 02.入队列，队列采用循环结构可以最大限度利用空间
+void AddQ(Queue PtrQ, ElementType item)
+{
+    if ((PtrQ->rear + 1) % MaxSize == PtrQ->front)
     {
         printf("队列满");
         return;
     }
-    PtrQ->rear = (PtrQ->rear+1)%MaxSize;
+    PtrQ->rear = (PtrQ->rear + 1) % MaxSize;
     PtrQ->Data[PtrQ->rear] = item;
 }
-//03.出队列
+// 03.出队列
 ElementType DeleteQ(Queue PtrQ)
 {
     ElementType item;
-    if(PtrQ->front==PtrQ->rear)
+    if (PtrQ->front == PtrQ->rear)
     {
         printf("队列空");
         return 0;
     }
-    PtrQ->front = (PtrQ->front+1)%MaxSize;
+    PtrQ->front = (PtrQ->front + 1) % MaxSize;
     return (PtrQ->Data[PtrQ->front]);
 }
+//判断是否空
+int IsEmpty(Queue PtrQ)
+{
+    if (PtrQ->front == PtrQ->rear)
+    {
+        // printf("队列空");
+        return 1;
+    }
+    else
+        return 0;
+}
+
+/*输入样例
+8 6
+0 7
+0 1
+2 0
+4 1
+2 4
+3 5
+*/
+/*输出样例
+{ 0 1 4 2 7 }
+{ 3 5 }
+{ 6 }
+{ 0 1 2 7 4 }
+{ 3 5 }
+{ 6 }
+*/
