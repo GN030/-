@@ -12,6 +12,10 @@ struct QNode
     int front;//记录头元素序号
 };
 
+
+void AddQ(Queue PtrQ,ElementType item);//入队列，队列采用循环结构可以最大限度利用空间
+ElementType DeleteQ(Queue PtrQ);//出队列
+
 int main(void)
 {
     struct QNode Q;
