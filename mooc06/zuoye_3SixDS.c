@@ -1,39 +1,17 @@
-/*题意理解：列出连通集，先输出DFS，在输出BFS*/
-/*思路：1先采用邻接矩阵的存储方法试一下*/
-/*邻接矩阵存储实现*/
-
-/*----邻接矩阵中，广度优先搜索BFS设计思路：
-1,首先定义全局变量bool Visited[],储存每个顶点V的访问标记，并初始化为false
-2,创建空队，将顶点下标入队；
-3,如果队非空，出队一个元素X，逐个检查所有顶点是否为邻接点；若顶点Y为邻接点(Graph->G[X][Y]=1)，且未被访问过，访问Y并标记Y，将顶点Y入队
-4,步骤3循环执行，直至队列空。*/
-
-/*----邻接矩阵中,深度优先搜索DFS设计思路：（自己补充）
-1,首先定义全局变量bool Visited[],储存每个顶点V的访问标记，并初始化为false;
-2,首先将顶点V标记为已访问，接下来逐个检查所有顶点是否为S的邻接点；
-3,若顶点W为邻接点（Graph->G[X][Y]=1），且未被访问过，递归调用DFS（Graph,Y,visit）
-3,递归结束，继续判断顶点S的下一个邻接点W++；
+/*题意分析：六度空间理论，判定一张图中符合六度空间的结点站所有节点的百分比;首先输入顶点数N和边数M;
+最后打印对每个结点输出与该结点距离不超过6的结点数占结点总数的百分比，精确到小数点后2位。每个结节点输出一行，格式为“结点编号:（空格）百分比%”。*/
+/*思路：
+1,使用邻接矩阵存储,广度优先搜索方法;
+2,实现广度优先搜索关于层数的判别:last2保存每层最后一个结点，last1保存每次向下搜索层的最后一个结点；当last2==当前顶点V时，将last2=last1，层数level++；
 */
-
-/*邻接矩阵表示思路：
-1,定义边对应的结构体ENode,其中存储有向边<Vq1,V2>,和该边的权重；
-2,定义图结点对应的结构体GNode，其中存储顶点数Nv,边数Ne，邻接矩阵G[预设值][预设值]（用邻接矩阵的顶点下标表示顶点）（矩阵元素对应每个单向边的权重）,以及每个顶点的数据（比如边的名字）
-3,初始化图：一个具有N个顶点，但无边的图，要申请图结点空间GNode，初始化其中各项值
-4,插入边：将边结构体ENode其中的单向边值和权重值传入图结点GNode；
-5,建立图：读入顶点数，初始化一个空图，读入所有边数据存入邻接矩阵中，读入每个结点的数据存入Data；
-*/
-
-/*注意&必读：
-1,这里默认顶点编号从0开始，到(Graph->Nv - 1) ,所以你在用的时候要额外注意输入的顶点从0还是从1开始
-*/
-
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>/* 此为memset()需调用的库函数*/
 #include <stdbool.h>
 
 /*队列的矩阵存储实现*/
 #define ElementType int
-#define MaxSize 100
+#define MaxSize 1001
 typedef struct QNode *Queue;
 struct QNode
 {
@@ -43,7 +21,7 @@ struct QNode
 };
 
 /*图的邻接矩阵表示方法*/
-#define MaxVertexNum 100 /*最大顶点数*/
+#define MaxVertexNum 1001 /*最大顶点数*/
 #define INFINITY 65535   /*无穷设为双字节无符号整数的最大值65535*/
 
 bool Visited[MaxVertexNum] = {false}; //结点是否被访问过的标志
@@ -71,45 +49,36 @@ struct GNode
 };
 typedef PtrToGNode MGraph; /* 以邻接矩阵存储的图类型 */
 
-MGraph CreateGraph(int VertexNum);                       /* 初始化一个有VertexNum个顶点但没有边的图 */
-void InsertEdge(MGraph Graph, Edge E);                   /*插入边，边权重值默认为1*/
-MGraph BuildGraph();                                     /*根据输入，建立一个图*/
-bool IsEdge(MGraph Graph, Vertex V, Vertex W);           /*判断两个顶点之间是否有边存在*/
-void Visit(Vertex V);                                    /*访问结点*/
-void BFS(MGraph Graph, Vertex S, void (*Visit)(Vertex)); /* 以S为出发点对邻接矩阵存储的图Graph进行BFS搜索 */
-void DFS(MGraph Graph, Vertex S, void (*Visit)(Vertex)); /* 以S为出发点对邻接矩阵存储的图Graph进行DFS搜索 */
+/*创建图的相关函数声明(邻接矩阵表示)*/
+MGraph CreateGraph(int VertexNum);     /* 初始化一个有VertexNum个顶点但没有边的图 */
+void InsertEdge(MGraph Graph, Edge E); /*插入边*/
+MGraph BuildGraph();                   /*建立图*/
 
-void AddQ(Queue PtrQ, ElementType item); //入队列，队列采用循环结构可以最大限度利用空间
-ElementType DeleteQ(Queue PtrQ);         //出队列
-int IsEmpty(Queue PtrQ);                 /*队列空，返回1*/
-Queue CreateQueue();                     /*创建空队*/
+/*队列相关函数声明(线性存储)*/
+Queue CreateQueue();                     // 04.创建空队
+void AddQ(Queue PtrQ, ElementType item); // 02.入队列，队列采用循环结构可以最大限度利用空间
+ElementType DeleteQ(Queue PtrQ);         // 03.出队列
+int IsEmpty(Queue PtrQ);                 //判断是否为空
+
+/*BFS和DFS相关函数声明*/
+bool IsEdge(MGraph Graph, Vertex V, Vertex W);
+int BFS(MGraph Graph, Vertex S, void (*Visit)(Vertex));  /* 以S为出发点对邻接矩阵存储的图Graph进行BFS搜索 */
+void DFS(MGraph Graph, Vertex S, void (*Visit)(Vertex)); /* 以S为出发点对邻接矩阵存储的图Graph进行DFS搜索 */
+void Visit(Vertex);
 
 int main(void)
 {
-    int i, j;
+    int value;
+    float percent;
     MGraph G;
     G = BuildGraph();
-    for (i = 0; i < G->Nv; i++) /*广度优先搜索并打印连通集*/
+    value = 0; /*与目标结点不超过六层的结点数*/
+    for (Vertex i = 0; i < G->Nv; i++) 
     {
-        if (Visited[i] != true)
-        {
-            printf("{");
-            DFS(G, i, Visit);
-            printf(" }\n");
-        }
-    }
-    for ( i = 0; i < G->Nv; i++)
-    {/*清除访问标志Visited[]*/
-        Visited[i] = false;
-    }   
-    for (i = 0; i < G->Nv; i++) /*深度优先搜索并打印连通集*/
-    {
-        if (Visited[i] != true)
-        {
-            printf("{");
-            BFS(G, i, Visit);
-            printf(" }\n");
-        }
+        value = BFS(G, i, Visit);
+        memset(Visited, false, G->Nv); /*每次都要初始化Visited[]*/
+        percent = (((float)value+1) / (float)G->Nv);
+        printf("%d: %.2f%%\n", i+1, percent*100);
     }
     return 0;
 }
@@ -126,18 +95,17 @@ MGraph CreateGraph(int VertexNum)
     /* 注意：这里默认顶点编号从0开始，到(Graph->Nv - 1) */
     for (V = 0; V < Graph->Nv; V++)
         for (W = 0; W < Graph->Nv; W++)
-            // Graph->G[V][W] = 0; /*空权重全部为0*/
             Graph->G[V][W] = INFINITY;
 
     return Graph;
 }
 
 void InsertEdge(MGraph Graph, Edge E)
-{ /*权重值默认为1*/
+{/*输入边的起始1开始，这里要做修改*/
     /* 插入边 <V1, V2> */
-    Graph->G[E->V1][E->V2] = 1;
+    Graph->G[(E->V1)-1][(E->V2)-1] = E->Weight;
     /* 若是无向图，还要插入边<V2, V1> */
-    Graph->G[E->V2][E->V1] = 1;
+    Graph->G[(E->V2)-1][(E->V1)-1] = E->Weight;
 }
 
 MGraph BuildGraph()
@@ -158,13 +126,16 @@ MGraph BuildGraph()
         for (i = 0; i < Graph->Ne; i++)
         {
             scanf("%d %d", &E->V1, &E->V2);
+            E->Weight = 1;
             /* 注意：如果权重不是整型，Weight的读入格式要改 */
             InsertEdge(Graph, E);
         }
     }
+
     // /* 如果顶点有数据的话，读入数据 */
     // for (V = 0; V < Graph->Nv; V++)
     //     scanf(" %c", &(Graph->Data[V]));
+
     return Graph;
 }
 
@@ -181,35 +152,50 @@ void Visit(Vertex V)
 {
     printf(" %d", V);
 }
-/* Visited[]为全局变量，已经初始化为false */
-void BFS(MGraph Graph, Vertex S, void (*Visit)(Vertex))
-{ /* 以S为出发点对邻接矩阵存储的图Graph进行BFS搜索 */
-    Queue Q;
-    Vertex V, W;
 
-    Q = CreateQueue(); /* 创建空队列, MaxSize为外部定义的常数 */
+/* Visited[]为全局变量，已经初始化为false */
+int BFS(MGraph Graph, Vertex S, void (*Visit)(Vertex))
+{ /* 以S为出发点对邻接矩阵存储的图Graph进行BFS搜索 */
+    int level, count;
+    level = -1;
+    count = 0;
+    Queue Q;
+    Vertex V, W, last1, last2;
+    Q = CreateQueue(MaxSize); /* 创建空队列, MaxSize为外部定义的常数 */
     /* 访问顶点S：此处可根据具体访问需要改写 */
-    Visit(S);
+    // Visit(S);
     Visited[S] = true; /* 标记S已访问 */
     AddQ(Q, S);        /* S入队列 */
-
+    level = 0;
+    last2=S;
     while (!IsEmpty(Q))
     {
-        V = DeleteQ(Q);                 /* 弹出V */
+        V = DeleteQ(Q); /* 弹出V */
         for (W = 0; W < Graph->Nv; W++) /* 对图中的每个顶点W */
             /* 若W是V的邻接点并且未访问过 */
             if (!Visited[W] && IsEdge(Graph, V, W))
             {
                 /* 访问顶点W */
-                Visit(W);
+                // Visit(W);
                 Visited[W] = true; /* 标记W已访问 */
                 AddQ(Q, W);        /* W入队列 */
+                count++;
+                last1 = W; /*当前顶点V的最后一个邻接点下标*/
             }
-    } /* while结束*/
+        if(V==last2)/*当前层的最后一个顶点下标V的邻接点已经全部找到*/
+        {
+            last2=last1;//保存下一层的最后一个顶点下标
+            level++;/*第ans层遍历结束*/
+        }
+        if (level==6)
+        break;
+        
+    }              /* while结束*/
+    return count;
 }
 /* Visited[]为全局变量，已经初始化为false */
 void DFS(MGraph Graph, Vertex S, void (*Visit)(Vertex))
-{ /* 以S为出发点对邻接矩阵存储的图Graph进行DFS搜索 */
+{
     Vertex W;
     /*访问顶点S：此处可以根据具体访问需要改写*/
     Visit(S);
@@ -266,21 +252,3 @@ int IsEmpty(Queue PtrQ)
     else
         return 0;
 }
-
-/*输入样例
-8 6
-0 7
-0 1
-2 0
-4 1
-2 4
-3 5
-*/
-/*输出样例
-{ 0 1 4 2 7 }
-{ 3 5 }
-{ 6 }
-{ 0 1 2 7 4 }
-{ 3 5 }
-{ 6 }
-*/

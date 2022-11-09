@@ -18,9 +18,26 @@
 4,插入边：将边结构体ENode其中的单向边值和权重值传入图结点GNode；
 5,建立图：读入顶点数，初始化一个空图，读入所有边数据存入邻接矩阵中，读入每个结点的数据存入Data；
 */
+
+/*注意&必读：
+1,这里默认顶点编号从0开始，到(Graph->Nv - 1) ,所以你在用的时候要额外注意输入的顶点从0还是从1开始
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+
+/*队列的矩阵存储实现*/
+#define ElementType int
+#define MaxSize 10000
+typedef struct QNode *Queue;
+struct QNode
+{
+    ElementType Data[MaxSize];
+    int rear;  //记录尾元素序号
+    int front; //记录头元素序号
+};
+
 /*图的邻接矩阵表示方法*/
 #define MaxVertexNum 100 /*最大顶点数*/
 #define INFINITY 65535   /*无穷设为双字节无符号整数的最大值65535*/
@@ -50,6 +67,19 @@ struct GNode
 };
 typedef PtrToGNode MGraph; /* 以邻接矩阵存储的图类型 */
 
+/*BFS和DFS相关函数声明*/
+bool IsEdge(MGraph Graph, Vertex V, Vertex W);
+void BFS(MGraph Graph, Vertex S, void (*Visit)(Vertex));/* 以S为出发点对邻接矩阵存储的图Graph进行BFS搜索 */
+void DFS(MGraph Graph, Vertex S, void (*Visit)(Vertex)); /* 以S为出发点对邻接矩阵存储的图Graph进行DFS搜索 */
+void Visit(Vertex);
+
+/*队列相关函数声明(线性存储)*/
+Queue CreateQueue();// 04.创建空队
+void AddQ(Queue PtrQ, ElementType item);// 02.入队列，队列采用循环结构可以最大限度利用空间
+ElementType DeleteQ(Queue PtrQ);// 03.出队列
+int IsEmpty(Queue PtrQ);//判断是否为空
+
+
 /* 深度优先搜索实现BFS-基于邻接矩阵 */
 /* IsEdge(Graph, V, W)检查<V, W>是否图Graph中的一条边，即W是否V的邻接点。  */
 /* 此函数根据图的不同类型要做不同的实现，关键取决于对不存在的边的表示方法。*/
@@ -57,6 +87,11 @@ typedef PtrToGNode MGraph; /* 以邻接矩阵存储的图类型 */
 bool IsEdge(MGraph Graph, Vertex V, Vertex W)
 {
     return Graph->G[V][W] < INFINITY ? true : false;
+}
+
+void Visit(Vertex V)
+{
+    printf(" %d", V);
 }
 
 /* Visited[]为全局变量，已经初始化为false */
@@ -99,4 +134,48 @@ void DFS(MGraph Graph, Vertex S, void (*Visit)(Vertex))
             DFS(Graph, W, Visit);
         }
     }
+}
+
+// 04.创建空队
+Queue CreateQueue()
+{
+    Queue Q;
+    Q = (Queue)malloc(sizeof(struct QNode));
+    Q->front = 0;
+    Q->rear = MaxSize;
+    return Q;
+}
+// 02.入队列，队列采用循环结构可以最大限度利用空间
+void AddQ(Queue PtrQ, ElementType item)
+{
+    if ((PtrQ->rear + 1) % MaxSize == PtrQ->front)
+    {
+        printf("队列满");
+        return;
+    }
+    PtrQ->rear = (PtrQ->rear + 1) % MaxSize;
+    PtrQ->Data[PtrQ->rear] = item;
+}
+// 03.出队列
+ElementType DeleteQ(Queue PtrQ)
+{
+    ElementType item;
+    if (PtrQ->front == PtrQ->rear)
+    {
+        printf("队列空");
+        return 0;
+    }
+    PtrQ->front = (PtrQ->front + 1) % MaxSize;
+    return (PtrQ->Data[PtrQ->front]);
+}
+//判断是否空
+int IsEmpty(Queue PtrQ)
+{
+    if (PtrQ->front == PtrQ->rear)
+    {
+        // printf("队列空");
+        return 1;
+    }
+    else
+        return 0;
 }

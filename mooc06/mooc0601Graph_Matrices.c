@@ -6,16 +6,23 @@
 4,插入边：将边结构体ENode其中的单向边值和权重值传入图结点GNode；
 5,建立图：读入顶点数，初始化一个空图，读入所有边数据存入邻接矩阵中，读入每个结点的数据存入Data；
 */
+
+/*注意&必读：
+1,这里默认顶点编号从0开始，到(Graph->Nv - 1) ,所以你在用的时候要额外注意输入的顶点从0还是从1开始
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
 /*图的邻接矩阵表示方法*/
 #define MaxVertexNum 100 /*最大顶点数*/
 #define INFINITY 65535   /*无穷设为双字节无符号整数的最大值65535*/
-bool Visited[MaxVertexNum]={false};//结点是否被访问过的标志
-typedef int Vertex;      /*用顶点下标表示顶点，为整型*/
-typedef int WeightType;  /*边的权值设为整型*/
-typedef char DataType;   /*顶点存储的数据类型设为字符型*/
+
+bool Visited[MaxVertexNum] = {false}; //结点是否被访问过的标志
+
+typedef int Vertex;     /*用顶点下标表示顶点，为整型*/
+typedef int WeightType; /*边的权值设为整型*/
+typedef char DataType;  /*顶点存储的数据类型设为字符型*/
 /*边的定义*/
 typedef struct ENode *PtrToENode;
 struct ENode
@@ -35,6 +42,11 @@ struct GNode
     /* 注意：很多情况下，顶点无数据，此时Data[]可以不用出现 */
 };
 typedef PtrToGNode MGraph; /* 以邻接矩阵存储的图类型 */
+
+/*创建图的相关函数声明(邻接矩阵表示)*/
+MGraph CreateGraph(int VertexNum);     /* 初始化一个有VertexNum个顶点但没有边的图 */
+void InsertEdge(MGraph Graph, Edge E); /*插入边*/
+MGraph BuildGraph();                   /*建立图*/
 
 MGraph CreateGraph(int VertexNum)
 { /* 初始化一个有VertexNum个顶点但没有边的图 */

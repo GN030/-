@@ -25,6 +25,11 @@
 4,插入边：根据输入数据建立一个边结点结构体ENode，创建邻接点结构体AdjVNode并申请空间，对其下标、权重进行赋值，将Graph->G[E->V2].FirstEdge链接在AdjVNode->Next中，并将AdjVNode指针存放在Graph->G[E->V2].FirstEdge中；
 5,建立图：读入顶点个数，并初始化空图；逐个读入每一条边，存入边结构体ENode，并插入图Graph中；若有顶点数据，将其存入Graph->G[i].Data中。
 */
+
+/*注意&必读：
+1,这里默认顶点编号从0开始，到(Graph->Nv - 1) ,所以你在用的时候要额外注意输入的顶点从0还是从1开始
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>

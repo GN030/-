@@ -16,11 +16,28 @@ struct HeapStruct
     int Size;              //堆当前元素的个数
     int Capacity;          //堆的最大容量
 };
+
+/*堆的函数声明*/
+int IsFull(HeapTree H); //判断堆是否满，满堆返回1
+int IsEmpty(HeapTree H); //判断堆是否空，空堆返回1
+HeapTree CreateHeapMax(int Maxsize); //02创建最大堆,容量为Maxsize的空堆
+HeapTree CreateHeapMin(int Maxsize) ;//02创建最小堆,容量为Maxsize的空堆
+void InsertMax(HeapTree H, ElementType item); //03最大堆的插入:将元素item插入到最大堆H中，其中哨兵为H->ElementType[0]
+void InsertMin(HeapTree H, ElementType item); // 03最小堆的插入:将元素item插入到最大堆H中，其中哨兵为H->ElementType[0]
+ElementType DeleteMax(HeapTree H); // 04最大堆的删除:从最大堆H中取出键值最大的元素，并删除该结点
+ElementType DeleteMin(HeapTree H); //04最小堆的删除:从最小堆H中取出键值最小的元素，并删除该结点
+void PercDownMax(HeapTree H, int p);/*建造最大堆-下滤：将H中以H->Data[p]为根的子堆调整为最大堆 */
+void BuildHeapMax(HeapTree H);/*建造最大堆*/
+void PercDownMin(HeapTree H, int p);/*建造最小堆-下滤*/
+void BuildHeapMin(HeapTree H);/*建造最小堆*/
+
 int main(void)
 {
 
     return 0;
 }
+
+/*堆的实现函数*/
 int IsFull(HeapTree H) //判断堆是否满，满堆返回1
 {
     return (H->Size == H->Capacity);

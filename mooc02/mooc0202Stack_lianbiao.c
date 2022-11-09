@@ -10,8 +10,12 @@ struct SNode
     ElementType Data;
     Stack Next;
 };
+
+/*堆栈的函数声明*/
 Stack CreateStack();
 int IsEmpty(Stack S);
+void Push(Stack S,ElementType item);//入栈
+ElementType Pop(Stack S);//出栈
 
 int main(void)
 {
